@@ -1,0 +1,195 @@
+﻿Some usefull interview questions answered.
+
+1. What is the difference between process and thread?
+
+Processes and threads are the two basic units of concurrency. 
+Although these concepts are related, they are fundamentally different.
+
+A process refers to a instance of a program that is in execution. 
+System resources such as CPU time and memory are allocated to every individual process which executes in a different or separate address space. 
+Processes can't attain each others variables and data structures. However, to attain the resources of another process, inter-process communications can 
+be harnessed by way of pipes, files and sockets.
+
+On the other hand, a thread is the unit of execution within a process. A thread uses the same stack space of a process. 
+One process can have more than one threads, although it is not possible for a thread to contain a process. 
+An important difference between processes and threads is that multiple threads can share the parts of their state.
+ This means that multiple threads can read and write the same memory, while a process can't access the memory of other processes. 
+Threads have their own stacks and registers, although a thread can read and write the stack memory of another  thread. 
+
+A thread is a specific execution path of a process. When a process resource is modified by a thread, sibling threads notice the changes.
+
+2. How do you create a thread in Java and run it?
+
+There is two ways of creating a thread, namely by extending the Thread class or by implementing  the Runnable interface.
+
+Focusing on the extension of the Thread class, it provided methods and constructors to create and perform operations on a thread.
+Thread class extends Object class and implements Runnable interface. Common examples of methods and constructors are the public void run() method and the Thread() constructor.
+An example of creating a thread and running the thread (through the start() method) by extending the Thread class is as follows:
+
+class Multi extends Thread {
+   public void run() {
+   System.out.println(Thread is running...");
+}
+public static void main (string args[]) {
+   Multi t1 = new Multi();
+   t1.start();
+}
+}
+
+This will be the output:
+
+Thread is running......
+
+3. What are the different states of a thread  and when do the state transitions occur?
+
+In Java, a thread can exist at any point of time in any one of the states . Thus, a thread lies only in one state at any instant. The six states is:
+
+-  New
+-  Runnable
+-  Blocked
+-  Waiting
+-  Timed Waiting
+- Terminated
+
+Transition from one state to another can occur through the use of a method and locks. 
+So the 'New" state means that a thread has been created but has not been executed yet. 
+Once the start() method have been called a transition takes place to the "Runnable" state which triggers the run() method. 
+It is possible for a thread to return to the runnable state from other states like the waiting and blocked, although the thread scheduler may not be able to pic it up immediately.
+
+A thread enters a blocked state when it tries to obtain a lock held by another thread. 
+If all the other threads give up the lock and the thread scheduler allows the specific thread to hold the lock then the thread is unblocked and enters the runnable state. 
+A waiting state is entered when a thread is waiting to be informed  by another thread. This occurs when calling the Object.wait() - or Thread.join() method. 
+In addition a thread enters a waiting state if waiting occurs for a lock or condition pertaining to the java.util.concurrent package. 
+If a thread calls the notify() - or signal() method a runnable state is entered.
+
+A timed waiting state is entered when a timeout parameter is called. 
+Here the sleep(), wait(), Lock.tryLock() methods as well as the Condition.await() methods is applicable. 
+When the timeout is reached or the specific notification is received, the threads exits the state.
+
+Lastly, when execution is completed a thread reach the terminated state. 
+Termination can be due to one of two reasons which can be the run() method exiting normally or the run() method exiting when an uncaught exception occurs.
+
+4. What is the daemon thread and what are its use cases?
+
+A daemon thread - in the contexts of the Java Virtual Machine (JVM) - is a low priority thread running in the background, performing tasks such as garbage collections.  
+These threads don't avert the JVM from exiting when all the user threads finish their execusion. The JVM doesn't care if the daemon thread is running or not. 
+If the JVM finds a running daemon thread upon the completion of  user threads, thread is terminated and after that shutdown itself.
+
+5. How do you create a daemon thread?
+
+One way of creating a daemon thread is by to specify that a thread is a daemon thread, and calling the setDaemon method with the argument true. 
+To then determine if a thread is a daemon thread use the accessor method isDaemon.
+
+The sample code can look like this:
+
+package com.myjava.threads;
+ 
+public class DaemonThread extends Thread{
+     
+    public DaemonThread(){
+        setDaemon(true);
+    }
+    public void run(){
+        System.out.println("Is this thread daemon? - "+isDaemon());
+    }
+    public static void main(String a[]){
+        DaemonThread dt = new DaemonThread();
+        
+        dt.start();
+    }
+}
+
+The output:
+
+Is this thread Daemon? - true
+
+6. What is Java Memory Model (JMM)
+
+We can think of the memory model as the architecture which determines how different memory parts, namely stack and heap, interact. 
+Through the JVM the memory is divided into the memory parts as mentioned. The thread stack is the memory part storring data applicable to the thread. 
+Every thread thus has it's own thread stack. The thread stack stores local variables - primitive and reference variables - of each method, irrespective of belonging to an object or not.
+
+In the case two separate threads calling the same method, the different threads create its own copy of the local variable declared in the method. 
+A thread can't directly access the variables in another thread.
+
+For a Java application there is only one shared heap. 
+It stores the created objects as well as their member variables which is both the primitives and references. 
+Any thread with a reference to an object on the heap can access its member variables. 
+In addition a singleobject on the heap can be referenced by the local variables of the different threads.
+
+7. What are deadlock, livelock, and starvation? What causes these conditions?
+
+To understand the above mentioned three concepts it is worthwhile to first understand the concept of "liveness". 
+It refers to a concurrent application' ability to  execute in a timely manner. Deadlock, livelock and starvation is common kinds of this liveness problem.
+
+A deadlock referes to a situation where two or more threads are blocked forever, waiting for each other. 
+Starvation refers to a situation where thread cant get regular shared access to a shared resource/s and is not able to progress. 
+When "greedy" threads make resources unavailable for long periods access is very difficult. As a example, suppose an object provides a synchronized
+ method that often takes a long time to return.. If one thread invokes this method frequently, other threads also depending on synchronized access to a 
+shared resource of the same object will often be blocked.
+
+Livestock refers to a thread that  act on a the action of another thread. Livestock occurs then when the other threads action is also a reaction to a thread. 
+Unlike a deadlock a livestock is not blocked, but rather to busy responding to each other to resume work.
+
+8. What happens if you don't override the thread class run() method?
+
+When the start method() is called pertaining to a thread, it internally calls the run() method with a newly created thread. So if a ru() method is not overrided the newly created thread 
+wont be called and nothing will happen.
+
+9. What is atomic operation and what are atomic classes in the Java Concurrency API?
+
+An atomic operation indicate operations that always execute together. Either the all execute together or non of them executes. 
+If an operation is atomic, then it can't be partially complete, either it will be complete, or not start at all, but will not be incomplete. 
+The following is an example of an atomic operation:
+
+public class Atomicity {
+    int i;
+    public void incrementNumber() {
+        i = 1;
+    }
+}
+
+In the above example int I is given an value of 1. This is an atomic operation since this will either happen together, assigning 1 to I, or not happen at all.
+
+Regarding atomic classes, the java.util.concurrent.atomic package contains a set of classes that support atomic compound actions on a single value in a lock-free manner. 
+The incrementAndGet method is an example of a compound action available on the atomic classes. Atomic classes are provided for Booleans, integers, longs, and object references.
+
+10. What are Executor and ExecutorService and what are the differences between them?
+
+An Executor is a standardized interface which defines custom thread-like subsystems such as pools and lightweight task frameworks. 
+Taking into account the Executor class being used, a task may execute in a newly created thread or in an existing task-execution thread. 
+Alternatively the thread can call execute. The thread can execute sequentially or concurrently. 
+ExecutorService on the other hand gives a more thorough asynchronous task execution framework. An ExecutorService manages queuing and scheduling of tasks, 
+allowing for controlled shutdowns.
+
+11. What are Concurrent Collection Classes?
+
+The concurrent collection API's are a set of collection API's designed and optimized for synchronized multithreaded access. 
+These collections are grouped under the java.util.concurrent package. It is different than the collection framework in the obvious sense that it is concurrent. 
+All the Concurrent Collection classes are synchronized and thread-safe. Therefore Concurrent Collection Classes are the best choice when dealing with multiple 
+threads in a application compared to traditional collections like an Arraylist and a LinkedList. An examples of Concurrent Classes are the ConcurrentHashMap class.
+
+Biblography
+
+Internet sorces:
+
+https://www.baeldung.com/java-atomic-variables
+https://www.codejava.net/java-core/concurrency/understanding-thread-priorities-and-daemon-thread-in-java
+https://www.codejava.net/java-core/concurrency/understanding-thread-priorities-and-daemon-thread-in-java
+https://dzone.com/articles/java-concurrency-atomic-variables
+https://www.geeksforgeeks.org/lifecycle-and-states-of-a-thread-in-java/#:~:text=New%20Thread%3A%20When%20a%20new,is%20moved%20to%20runnable%20state.
+https://www.geeksforgeeks.org/daemon-thread-java/#:~:text=Daemon%20thread%20is%20a%20low,user%20threads%20finish%20their%20execution
+https://docs.oracle.com/javase/tutorial/essential/concurrency/
+https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html
+https://docs.oracle.com/javase/tutorial/essential/concurrency/collections.html
+https://beginnersbook.com/2015/01/daemon-thread-in-java-with-example/#:~:text=Daemon%20thread%20is%20a%20low,daemon%20threads)%20finish%20their%20execution.
+https://www.java2novice.com/java_thread_examples/daemon_threads/
+https://www.educative.io/edpresso/what-is-the-java-memory-model
+https://www.developer.com/java/data/an-introduction-to-concurrent-collection-apis-in-java.html#:~:text=The%20concurrent%20collection%20APIs%20of,the%20additional%20support%20of%20concurrency.
+https://www.cs.umd.edu/class/spring2014/cmsc433-0201/Lectures/BuildingBlocks.pdf
+https://www.geeksforgeeks.org/difference-traditional-collections-concurrent-collections-java/
+https://javagoal.com/concurrent-collections-in-java/
+https://javagoal.com/concurrent-collections-in-java/
+https://www.geeksforgeeks.org/difference-traditional-collections-concurrent-collections-java/
+https://sites.cs.ucsb.edu/~cappello/190B/resources/rc061-010d-java_concurrency_0.pdf
+https://www.javamadesoeasy.com/2015/03/what-will-happen-if-we-dont-override.html#:~:text=When%20we%20call%20start(),called%20and%20nothing%20will%20happen.&text=%2F*OUTPUT-,main%20has,main%20has%20ended.
